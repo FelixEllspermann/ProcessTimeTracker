@@ -1,5 +1,7 @@
+import os
 import psutil
 import time
+from datetime import  datetime
 
 def is_dota_running(program_name):
     for proc in psutil.process_iter(attrs=['name']):
@@ -10,32 +12,26 @@ def is_dota_running(program_name):
             pass
     return False
 
-def read_total_time(file_path):
-    try:
-        with open(file_path, 'r') as file:
-            total_time = int(file.read())
-    except FileNotFoundError:
-        total_time = 0
-    return total_time
+def read_time_log(file_path):
+    if not os.path.exists(file_path):
+        return{}
+    with open (file_path, 'r') as file:
+        lines = file.readlines()
+    time_log = {}
+    for line in lines:
+        date, seconds = line.strip().split(": ")
+        time_log[date] = int(seconds)
+    return time_log
 
-def write_total_time(file_path, total_time):
+def write_time_log(file_path, time_log):
     with open(file_path, 'w') as file:
-        file.write(str(total_time))
-
-def format_time(seconds):
-    hours = seconds // 3600
-    minutes = (seconds % 3600)  // 60
-    seconds = seconds % 60
-    if hours > 0:
-        return f"{hours} Stunden, {minutes} Minuten, {seconds} Sekunden"
-    elif minutes > 0:
-        return f"{minutes} Minuten, {seconds} Sekunden"
-    else:
-        return f"{seconds} Sekunden"
+        for date, seconds in time_log.items():
+            file.write(f"Tag {date}: {seconds} Sekunden geöffnet\n")
 
 
 program_name = 'dota2.exe'
-file_path = 'program_time.txt'
+log_file_path = 'program_usage_log'
+time_log = read_time_log(log_file_path)
 
 
 program_start_time = None
@@ -45,15 +41,14 @@ while True:
         program_start_time = time.time()
     elif not running and program_start_time is not None:
         program_end_time = time.time()
-
-        # berechne Vergangene Zeit seit dem Start des Programmes
-        elapsed_time = int(program_end_time - program_start_time)
-
-        #
-        total_time = read_total_time(file_path) + elapsed_time
-        write_total_time(file_path, total_time)
-        formated_time = format_time(elapsed_time)
-        total_formated_time = formated_time(total_time)
-        print(f"{program_name} lief für {formated_time} Sekunden. Gesamtzeit jetzt: {total_formated_time} Sekunden")
-        program_start_time = None
-    time.sleep(5)
+        elapsed_time = program_end_time - program_start_time
+        if elapsed_time > 300:
+            today = datetime.now().strftime("%Y-%m-%d")
+            if today in time_log:
+                time_log[today] += elapsed_time
+            else:
+                time_log[today] = elapsed_time
+            write_time_log(log_file_path, time_log)
+            print(f"Zeit für {today} gespeichert: {elapsed_time} Sekunden.")
+            program_start_time = None
+    time.sleep(60)
