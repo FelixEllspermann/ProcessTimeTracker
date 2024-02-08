@@ -1,13 +1,7 @@
 import os
-from pystray import MenuItem as item
-import PySimpleGUI as sg
-import pystray
-from PIL import Image, ImageDraw
-import threading
 import psutil
 import time
 from datetime import  datetime
-
 
 
 def is_dota_running(program_name):
@@ -27,7 +21,7 @@ def read_time_log(file_path):
     time_log = {}
     for line in lines:
         date, seconds = line.strip().split(": ")
-        time_log[date] = int(seconds)
+        time_log[date] = seconds
     return time_log
 
 def write_time_log(file_path, time_log):

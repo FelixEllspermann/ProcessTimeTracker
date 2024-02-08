@@ -19,7 +19,7 @@ def plot_time_log(time_log):
     y_pos = np.arange(len(dates))
     plt.bar(y_pos, times, align='center', alpha=0.7)
     plt.xticks(y_pos, dates, rotation=45)
-    plt.xlabel('datum')
+    plt.xlabel('Datum')
     plt.ylabel('Geöffnete Stunden')
     plt.title('Dota 2 Laufzeit')
 
