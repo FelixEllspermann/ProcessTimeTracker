@@ -1,4 +1,4 @@
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import numpy as np
 
 def read_time_log(file_path):
@@ -16,7 +16,7 @@ def plot_time_log(time_log):
 
     # Balkendiagram wird erstellt
     plt.figure(figsize=(10,6))
-    y_pos = np.arrange(len(dates))
+    y_pos = np.arange(len(dates))
     plt.bar(y_pos, times, align='center', alpha=0.7)
     plt.xticks(y_pos, dates, rotation=45)
     plt.xlabel('datum')

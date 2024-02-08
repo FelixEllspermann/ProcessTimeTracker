@@ -1,7 +1,14 @@
 import os
+from pystray import MenuItem as item
+import PySimpleGUI as sg
+import pystray
+from PIL import Image, ImageDraw
+import threading
 import psutil
 import time
 from datetime import  datetime
+
+
 
 def is_dota_running(program_name):
     for proc in psutil.process_iter(attrs=['name']):
@@ -30,7 +37,7 @@ def write_time_log(file_path, time_log):
 
 
 program_name = 'dota2.exe'
-log_file_path = 'program_usage_log'
+log_file_path = 'program_usage_log.txt'
 time_log = read_time_log(log_file_path)
 
 
@@ -41,7 +48,7 @@ while True:
         program_start_time = time.time()
     elif not running and program_start_time is not None:
         program_end_time = time.time()
-        elapsed_time = program_end_time - program_start_time
+        elapsed_time = int(program_end_time - program_start_time)
         if elapsed_time > 300:
             today = datetime.now().strftime("%Y-%m-%d")
             if today in time_log:
